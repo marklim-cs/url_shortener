@@ -1,0 +1,9 @@
+{% extends "layout.html" %}
+{% block body %}
+    <h1>Shortened URLs</h1>
+        {% for url in urls%}
+            <li>
+                {{ url[1] }}
+            </li>
+        {% endfor %}
+{% endblock%}
