@@ -41,9 +41,28 @@ def short():
         long_url = request.form.get("long_url")
         short_url = generate_short_url()
         if long_url:
-            db.execute("INSERT INTO urls (long_url, short_url) VALUES (?, ?)", (long_url, short_url))
-            db.commit()
-            return render_template("short.html", long_url=long_url, short_url=short_url, url_root=request.url_root)
+            try:
+                db.execute(
+                    "INSERT INTO urls (long_url, short_url) VALUES (?, ?)",
+                    (long_url, short_url)
+                )
+                db.commit()
+                return render_template("short.html", long_url=long_url,
+                                       short_url=short_url, url_root=request.url_root
+                                    )
+
+            except sqlite3.IntegrityError:
+                result = db.execute(
+                    "SELECT short_url FROM urls WHERE long_url=?", 
+                    (long_url, )).fetchone()
+
+                if result:
+                    short_url = result[0]
+                    return render_template("short.html", long_url=long_url,
+                                           short_url=short_url, url_root=request.url_root
+                                           )
+                else:
+                    return "An unexpected error occured!", 500
 
 
 @app.route("/<short_url>")
