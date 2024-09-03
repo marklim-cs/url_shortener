@@ -4,14 +4,9 @@ import sqlite3
 import os
 from dotenv import load_dotenv
 
-from flask import Flask, render_template, redirect, request, session, g
-from flask_session import Session
+from flask import Flask, render_template, redirect, request, g
 
 app = Flask(__name__)
-
-app.config["SESSION_PERMANENT"] = False
-app.config["SESSION_TYPE"] = "filesystem"
-Session(app)
 
 load_dotenv()
 DATABASE = os.getenv("DATABASE_URL")
@@ -28,13 +23,6 @@ def close_connection(exception):
     if db is not None:
         db.close()
 
-def create_table():
-    db = get_db()
-    db.execute('''CREATE TABLE IF NOT EXISTS urls
-                 (id INTEGER PRIMARY KEY, long_url TEXT UNIQUE, short_url TEXT UNIQUE)''')
-    db.commit()
-    db.close()
-
 def generate_short_url(length=6):
     chars = string.ascii_letters + string.digits
     short_url = "".join(random.choice(chars) for _ in range(length))
@@ -44,31 +32,31 @@ def generate_short_url(length=6):
 def index():
     return render_template("index.html")
 
-@app.route("/short", methods=["POST", "GET"])
+@app.route("/short", methods=["POST"])
 def short():
     db = get_db()
-    if "short" not in session:
-        session["short"] = []
 
     #POST
     if request.method == "POST":
         long_url = request.form.get("long_url")
         short_url = generate_short_url()
         if long_url:
-            db.execute("INSERT INTO urls (url, short_url) VALUES (?, ?)", (long_url, short_url))
+            db.execute("INSERT INTO urls (long_url, short_url) VALUES (?, ?)", (long_url, short_url))
             db.commit()
-            session["short"].append(short_url)
-            return redirect("short")
-
-    #GET
-    urls = []
-    for shorts in session["short"]:
-        current_url = db.execute("SELECT * FROM urls WHERE id = ?", (shorts,)).fetchone()
-    if current_url:
-        urls.append(current_url)
-    return render_template("short.html", urls=urls)
+            return render_template("short.html", long_url=long_url, short_url=short_url, url_root=request.url_root)
 
 
+@app.route("/<short_url>")
+def redirect_to_long_url(short_url):
+    db = get_db()
+    result = db.execute("SELECT long_url FROM urls WHERE short_url=?", (short_url, )).fetchone()
+    if result:
+        long_url = result[0]
+        db.close()
+        return redirect(long_url)
+    else:
+        db.close()
+        return redirect("/not_found.html")
 
 if __name__=="__main__":
-    app.run()
+    app.run(debug=True)

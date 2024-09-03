@@ -1,9 +1,10 @@
 {% extends "layout.html" %}
 {% block body %}
-    <h1>Shortened URLs</h1>
-        {% for url in urls%}
-            <li>
-                {{ url[1] }}
-            </li>
-        {% endfor %}
+    <h1>Done!</h1>
+        {% if long_url %}
+            <p>Long URL: <a href="{{ long_url }}">{{ long_url }}</a></p>
+            {% if short_url %}
+                <p>Short URL: <a href="{{ url_for('redirect_to_long_url', short_url=short_url) }}">{{ url_root }}{{ short_url }}</a></p>
+            {% endif %}
+        {% endif %}
 {% endblock%}
