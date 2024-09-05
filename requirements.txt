@@ -8,4 +8,4 @@ MarkupSafe==2.1.5
 uvicorn==0.30.6
 Werkzeug==3.0.4
 Flask-Session==0.8.0
-python-dotenv
+python-dotenv==1.0.1

@@ -1,8 +1,9 @@
-import random 
+import random
 import string
 import sqlite3
 import os
 from dotenv import load_dotenv
+import validators
 
 from flask import Flask, render_template, redirect, request, g
 
@@ -37,32 +38,35 @@ def short():
     db = get_db()
 
     #POST
-    if request.method == "POST":
-        long_url = request.form.get("long_url")
-        short_url = generate_short_url()
-        if long_url:
-            try:
-                db.execute(
+    long_url = request.form.get("long_url")
+    if not validators.url(long_url):
+        return render_template("invalid_url")
+
+    short_url = generate_short_url()
+    if long_url:
+        try:
+            db.execute(
                     "INSERT INTO urls (long_url, short_url) VALUES (?, ?)",
                     (long_url, short_url)
-                )
-                db.commit()
-                return render_template("short.html", long_url=long_url,
-                                       short_url=short_url, url_root=request.url_root
+                    )
+            db.commit()
+            return render_template("short.html", long_url=long_url,
+                                    short_url=short_url, url_root=request.url_root
                                     )
 
-            except sqlite3.IntegrityError:
-                result = db.execute(
-                    "SELECT short_url FROM urls WHERE long_url=?", 
-                    (long_url, )).fetchone()
+        # long_url exists in db
+        except sqlite3.IntegrityError:
+            result = db.execute(
+                "SELECT short_url FROM urls WHERE long_url=?", 
+                (long_url, )).fetchone()
 
-                if result:
-                    short_url = result[0]
-                    return render_template("short.html", long_url=long_url,
-                                           short_url=short_url, url_root=request.url_root
-                                           )
-                else:
-                    return "An unexpected error occured!", 500
+            if result:
+                short_url = result[0]
+                return render_template("short.html", long_url=long_url,
+                                        short_url=short_url, url_root=request.url_root
+                                        )
+            else:
+                return "An unexpected error occured!", 500
 
 
 @app.route("/<short_url>")
