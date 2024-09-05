@@ -1,10 +1,12 @@
 {% extends "layout.html" %}
 {% block body %}
-    <h1>Done!</h1>
-        {% if long_url %}
-            <p>Long URL: <a href="{{ long_url }}">{{ long_url }}</a></p>
-            {% if short_url %}
-                <p>Short URL: <a href="{{ url_for('redirect_to_long_url', short_url=short_url) }}">{{ url_root }}{{ short_url }}</a></p>
+    <div class="respons">
+        <h1>Here you go 😊</h1>
+            {% if long_url %}
+                {% if short_url %}
+                    <p>Short URL</p> <a href="{{ url_for('redirect_to_long_url', short_url=short_url) }}">{{ url_root }}{{ short_url }}</a>
+                    <p>Long URL</p> <a href="{{ long_url }}">{{ long_url }}</a>
+                {% endif %}
             {% endif %}
-        {% endif %}
+        </div>
 {% endblock%}

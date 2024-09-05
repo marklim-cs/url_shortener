@@ -1,10 +1,11 @@
 {% extends "layout.html" %}
 
 {% block body %}
+    <div class="container">
         <h1>URL-shortener</h1>
         <form action="/short" method="post">
             <input autocomplete="off" autofocus name="long_url" placeholder="Long URL" type="text">
             <button type="submit">Get short URL</button>
         </form>
-
+    </div>
 {% endblock %}
