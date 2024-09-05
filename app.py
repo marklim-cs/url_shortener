@@ -40,7 +40,7 @@ def short():
     #POST
     long_url = request.form.get("long_url")
     if not validators.url(long_url):
-        return render_template("invalid_url")
+        return render_template("invalid_url.html")
 
     short_url = generate_short_url()
     if long_url:
