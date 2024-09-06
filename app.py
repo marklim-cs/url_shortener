@@ -37,7 +37,6 @@ def index():
 def short():
     db = get_db()
 
-    #POST
     long_url = request.form.get("long_url")
     if not validators.url(long_url):
         return render_template("invalid_url.html")
