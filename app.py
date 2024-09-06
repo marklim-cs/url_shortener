@@ -5,7 +5,7 @@ import os
 from dotenv import load_dotenv
 import validators
 
-from flask import Flask, render_template, redirect, request, g, session
+from flask import Flask, render_template, redirect, request, g
 
 app = Flask(__name__)
 
@@ -43,9 +43,6 @@ def short():
         return render_template("invalid_url.html")
 
     short_url = generate_short_url()
-
-    session["short"] = short_url
-    session["long"] = long_url
 
     if long_url:
         try:
