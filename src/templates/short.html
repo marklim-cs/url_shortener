@@ -4,7 +4,7 @@
         <h1>Here you go 😊</h1>
             {% if long_url %}
                 {% if short_url %}
-                    <p>Short URL</p> <a href="{{ url_for('redirect_to_long_url', short_url=short_url) }}">{{ url_root }}{{ short_url }}</a>
+                    <p>Short URL</p> <a href="{{ url_for('short_url_bp.redirect_to_long_url', short_url=short_url) }}">{{ url_root }}{{ short_url }}</a>
                     <p>Long URL</p> <a href="{{ long_url }}">{{ long_url }}</a>
                 {% endif %}
             {% endif %}
