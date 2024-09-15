@@ -1,7 +1,7 @@
 from flask import Blueprint, render_template, request, redirect
 import validators
 from src.utils.generate_short_string import generate_short_string
-from src.services.short_url_services import get_short_url
+from src.services.short_url_services import get_short_url, get_long_url
 
 short_url_bp = Blueprint("short_url_bp", __name__)
 
@@ -21,7 +21,8 @@ def short():
     return get_short_url(long_url, short_url)
 
 @short_url_bp.route("/<short_url>")
-def redirect_to_long_url(result):
+def redirect_to_long_url(short_url):
+    result = get_long_url(short_url)
     if result:
         long_url = result[0]
         return redirect(long_url)
